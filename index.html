@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Linux Terminal Trainer - Instituto Diego Portales</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #1e1e24;
+            color: #f1f1f1;
+            padding: 30px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .terminal-container {
+            width: 100%;
+            max-width: 850px;
+            background-color: #0c0c0f;
+            border-radius: 8px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+            border: 1px solid #3a3a4a;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background-color: #25252e;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #3a3a4a;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot-red { background-color: #ff5f56; }
+        .dot-yellow { background-color: #ffbd2e; }
+        .dot-green { background-color: #27c93f; }
+
+        .title {
+            margin-left: 20px;
+            font-size: 13px;
+            color: #a0a0b0;
+            font-weight: bold;
+        }
+
+        .terminal-body {
+            padding: 25px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .welcome-screen, .quiz-screen, .result-screen {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        h1 {
+            color: #4af626;
+            font-size: 22px;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #3a3a4a;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            color: #00bfff;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            color: #ffbd2e;
+            font-weight: bold;
+        }
+
+        ul {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .btn {
+            background-color: #27c93f;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #1f9d30;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            background-color: #141419;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #22222a;
+        }
+
+        .prompt {
+            color: #4af626;
+            margin-right: 10px;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        .cmd-input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-family: inherit;
+            font-size: 16px;
+            width: 100%;
+            outline: none;
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .feedback-success {
+            background-color: rgba(39, 201, 63, 0.15);
+            border: 1px solid #27c93f;
+            color: #5eff70;
+        }
+
+        .feedback-error {
+            background-color: rgba(255, 95, 86, 0.15);
+            border: 1px solid #ff5f56;
+            color: #ff8882;
+        }
+
+        .progress-bar {
+            font-size: 12px;
+            color: #808090;
+            text-align: right;
+            margin-bottom: 10px;
+        }
+
+        .metric-container {
+            background-color: #141419;
+            padding: 20px;
+            border-radius: 6px;
+            border: 1px solid #2a2a35;
+            margin-top: 20px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .nota-alta {
+            color: #4af626;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .nota-baja {
+            color: #ff5f56;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="terminal-container">
+    <div class="terminal-header">
+        <div class="buttons">
+            <div class="dot dot-red"></div>
+            <div class="dot dot-yellow"></div>
+            <div class="dot dot-green"></div>
+        </div>
+        <div class="title">user@idp-telecom-terminal:~ (Hardware y Software)</div>
+    </div>
+    <div class="terminal-body">
+
+        <!-- PANTALLA DE BIENVENIDA -->
+        <div id="welcome-screen" class="welcome-screen active">
+            <h1>IDP Linux Terminal Challenge v1.0</h1>
+            <p>Bienvenido al simulador interactivo de comandos para la asignatura de <span class="highlight">Hardware y Software</span> de la carrera de Telecomunicaciones.</p>
+            <p>Este sistema evaluará tus conocimientos prácticos basándose estrictamente en las guías de laboratorio de comandos básicos, entornos y administración de particiones primarias.</p>
+            
+            <h2>Reglas del Juego:</h2>
+            <ul>
+                <li>El banco completo contiene 20 situaciones reales, pero el sistema seleccionará <span class="highlight">10 desafíos aleatorios</span> para esta sesión. ¡Cada intento será diferente!</li>
+                <li>Debes ingresar el comando de consola exacto que resuelve la situación planteada.</li>
+                <li>El sistema limpiará automáticamente espacios innecesarios antes y después de tu respuesta.</li>
+                <li><span class="highlight">Realimentación Instantánea:</span> Si te equivocas, el sistema te explicará inmediatamente el error conceptual y la forma correcta de solucionarlo para fijar el aprendizaje.</li>
+                <li>Al finalizar, se calculará tu porcentaje de logro y tu <span class="highlight">Nota Final</span> bajo la escala estándar con un 60% de exigencia para la aprobación (Nota 4.0).</li>
+            </ul>
+            <button class="btn" onclick="startQuiz()">INICIAR DESAFÍO</button>
+        </div>
+
+        <!-- PANTALLA DEL CUESTIONARIO -->
+        <div id="quiz-screen" class="quiz-screen">
+            <div id="progress" class="progress-bar">Pregunta 1 de 10</div>
+            <p id="situation-text" style="font-weight: bold; color: #00bfff; min-height: 50px;"></p>
+            
+            <div class="input-line">
+                <span class="prompt">idp_student@telecom:~$</span>
+                <input type="text" id="cmd-input" class="cmd-input" placeholder="Escribe tu comando aquí..." autocomplete="off" autofocus>
+            </div>
+
+            <button class="btn" id="submit-btn" onclick="checkAnswer()" style="margin-top: 15px;">Ejecutar Comando</button>
+            <button class="btn" id="next-btn" onclick="nextQuestion()" style="margin-top: 15px; display: none; background-color: #00bfff;">Siguiente Desafío &gt;</button>
+
+            <div id="feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- PANTALLA DE RESULTADOS -->
+        <div id="result-screen" class="result-screen">
+            <h1>Simulación Finalizada</h1>
+            <p>Has completado el set de desafíos aleatorios correspondientes a las Unidades de Administración de Archivos y Particionamiento MBR.</p>
+            
+            <div class="metric-container">
+                <div class="metric-row">
+                    <span>Respuestas Correctas:</span>
+                    <span id="res-correctas" class="highlight">0 / 10</span>
+                </div>
+                <div class="metric-row">
+                    <span>Porcentaje de Logro:</span>
+                    <span id="res-porcentaje" class="highlight">0%</span>
+                </div>
+                <div class="metric-row" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #3a3a4a;">
+                    <span>NOTA OBTENIDA:</span>
+                    <span id="res-nota">1.0</span>
+                </div>
+                <div class="metric-row">
+                    <span>Condición:</span>
+                    <span id="res-condicion" style="font-weight: bold;">---</span>
+                </div>
+            </div>
+
+            <button class="btn" onclick="restartQuiz()" style="background-color: #ffbd2e; margin-top: 25px;">INTENTAR NUEVO SET ALEATORIO</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Banco completo de 20 preguntas basadas rigurosamente en el contenido académico
+    const bancoPreguntas = [
+        {
+            problema: "Necesitas listar el contenido de tu directorio personal en formato largo, incluyendo archivos ocultos y ordenados por fecha de modificación (más recientes primero).",
+            correcto: "ls -lat ~",
+            explicacion: "El modificador '-l' activa el formato detallado, '-a' incluye los archivos ocultos y '-t' los ordena por tiempo. El símbolo '~' apunta directamente al directorio personal del usuario autenticado."
+        },
+        {
+            problema: "Se te pide unificar el contenido completo de dos archivos de texto llamados 'texto1.txt' y 'texto2.txt' en un nuevo archivo de salida llamado 'texto3.txt'.",
+            correcto: "cat texto1.txt texto2.txt > texto3.txt",
+            explicacion: "El comando 'cat' concatena los flujos de texto de los dos primeros archivos, y el operador '>' redirecciona la salida estándar para crear o sobrescribir el archivo de destino."
+        },
+        {
+            problema: "Olvidaste en qué carpeta del sistema de archivos estás posicionado actualmente. ¿Qué comando te muestra la ruta absoluta actual?",
+            correcto: "pwd",
+            explicacion: "'pwd' (Print Working Directory) imprime en la terminal la ruta exacta del directorio de trabajo en donde está parada tu shell en este momento."
+        },
+        {
+            problema: "Busca la palabra 'Richard Stallman' dentro de todos los archivos del directorio actual, sin importar si está escrita en mayúsculas o minúsculas.",
+            correcto: "grep -i "Richard Stallman" *",
+            explicacion: "'grep' busca patrones de texto, el modificador '-i' ignora la distinción entre mayúsculas/minúsculas y el asterisco '*' indica que realice la búsqueda en todos los archivos del directorio actual."
+        },
+        {
+            problema: "Quieres agregar la frase 'Texto de la nueva línea' al final de un archivo llamado 'archivo.txt' sin borrar ni alterar la información que ya tiene guardada.",
+            correcto: "echo "Texto de la nueva línea" >> archivo.txt",
+            explicacion: "El operador de doble redirección '>>' añade o concatena el flujo de texto al final del archivo especificado sin truncar ni eliminar su contenido previo."
+        },
+        {
+            problema: "Un servicio del entorno falló y necesitas borrar de forma recursiva y forzada el directorio '/home/juan' con todos sus subdirectorios y archivos internos sin pedir ninguna confirmación.",
+            correcto: "rm -rf /home/juan",
+            explicacion: "'rm' elimina archivos, '-r' procesa subcarpetas de manera recursiva y '-f' fuerza la acción anulando de forma definitiva las advertencias visuales interactivas."
+        },
+        {
+            problema: "Necesitas realizar una copia de respaldo de todo el contenido de '/usr' hacia '/home/respaldo' conservando de manera exacta todos sus atributos y enlaces lógicos internos.",
+            correcto: "cp -a /usr/. /home/respaldo/",
+            explicacion: "El comando 'cp' con el modificador '-a' (archive) realiza una copia recursiva idéntica que preserva permisos, usuarios, grupos y marcas de tiempo del hardware original."
+        },
+        {
+            problema: "Busca todos los archivos con extensión '.conf' dentro de la ruta '/etc' y guarda el listado de resultados exitosos en un archivo nuevo llamado 'configuraciones.txt'.",
+            correcto: "find /etc -name "*.conf" > configuraciones.txt",
+            explicacion: "'find' busca archivos en una ruta usando filtros como '-name'. El operador '>' almacena el flujo de salida exitosa (stdout) en el archivo de texto indicado."
+        },
+        {
+            problema: "Necesitas monitorear en tiempo real las últimas líneas del archivo de log del sistema ubicado en 'archivo.log' a medida que los servicios agregan eventos nuevos.",
+            correcto: "tail -f archivo.log",
+            explicacion: "'tail' muestra el final de un archivo de texto, y la opción '-f' (follow) mantiene la terminal activa actualizando la pantalla dinámicamente con las líneas nuevas escritas."
+        },
+        {
+            problema: "Un estudiante de telecomunicaciones necesita verificar el espacio disponible en disco, los tamaños ocupados y los puntos de montaje del sistema en un formato fácil de leer (Mbytes/Gbytes).",
+            correcto: "df -h",
+            explicacion: "El comando 'df' (disk free) reporta el espacio de los discos montados, y el modificador '-h' (human-readable) convierte los bloques de datos en unidades legibles para el humano."
+        },
+        {
+            problema: "Deseas identificar qué unidades de disco físico o virtual están conectadas actualmente al sistema y observar su estructura jerárquica de bloques en la terminal.",
+            correcto: "lsblk",
+            explicacion: "'lsblk' lista de manera visual, ordenada y en árbol todos los dispositivos de bloques de almacenamiento locales detectados por el kernel de Linux."
+        },
+        {
+            problema: "Se requiere dar formato con el sistema de archivos EXT4 a la primera partición primaria del segundo disco compacto, identificada como '/dev/sdb1'.",
+            correcto: "mkfs.ext4 /dev/sdb1",
+            explicacion: "La utilidad de la familia 'mkfs.ext4' (make file system) inicializa y escribe la estructura lógica y metadatos del formato ext4 sobre la partición seleccionada."
+        },
+        {
+            problema: "Tienes una partición formateada en '/dev/sdb1' y necesitas enlazarla al árbol jerárquico del sistema en la carpeta '/datos1' para poder interactuar y guardar archivos.",
+            correcto: "mount /dev/sdb1 /datos1",
+            explicacion: "El comando 'mount' conecta el dispositivo de bloques de hardware directamente con un directorio vacío preexistente, el cual actúa como su punto de montaje operativo."
+        },
+        {
+            problema: "Terminaste de usar el volumen en '/datos1' y necesitas desmontarlo del sistema de archivos de forma segura antes de retirar o apagar el disco.",
+            correcto: "umount /datos1",
+            explicacion: "'umount' (atención: se escribe sin la letra N intermedia) rompe de forma segura el enlace operativo entre el hardware de almacenamiento y el punto de montaje."
+        },
+        {
+            problema: "Estás dentro de fdisk operando un disco duro. ¿Qué comando u opción interna debes tipear para guardar de forma definitiva los cambios de las particiones en el hardware y salir?",
+            correcto: "w",
+            explicacion: "La opción 'w' (write) confirma y escribe los cambios pendientes directamente en los sectores físicos del disco duro antes de cerrar la sesión de la utilidad."
+        },
+        {
+            problema: "Estás dentro de fdisk y te das cuenta de que cometiste un error grave en los cilindros. ¿Qué opción usas para salir del programa descartando por completo todos los cambios hechos?",
+            correcto: "q",
+            explicacion: "La opción 'q' (quit) cierra la utilidad fdisk de forma inmediata sin alterar, modificar ni tocar la tabla de particiones original del dispositivo de bloques."
+        },
+        {
+            problema: "Quieres iniciar un proceso o comando pesado en segundo plano (background) para que la shell quede libre de inmediato para seguir ingresando comandos de red.",
+            correcto: "&",
+            explicacion: "Colocar el carácter ampersand '&' justo al final de cualquier instrucción le indica a la shell Bash que ejecute dicha tarea en segundo plano sin bloquear la entrada estándar."
+        },
+        {
+            problema: "Ejecutas el comando find en una ruta administrativa. Redirecciona únicamente los mensajes de error por falta de permisos (canal stderr) hacia un archivo llamado 'errores.txt'.",
+            correcto: "2> errores.txt",
+            explicacion: "El número '2' representa el descriptor del canal de error estándar (stderr). Al usar '2>', capturas exclusivamente los fallos operativos desviándolos al archivo indicado."
+        },
+        {
+            problema: "Se te pide verificar el tamaño total ocupado de manera resumida y recursiva por un directorio específico del sistema. ¿Qué comando base utilizas?",
+            correcto: "du",
+            explicacion: "El comando 'du' (disk usage) estima, calcula y detalla el espacio real en disco que consume un archivo o un directorio de forma descendente en la estructura."
+        },
+        {
+            problema: "En la tabla interactiva de fdisk necesitas crear una partición completamente nueva en el espacio libre del disco. ¿Qué comando interno debes presionar?",
+            correcto: "n",
+            explicacion: "La letra 'n' es la directiva interna de fdisk para inicializar el asistente interactivo de creación de una partición nueva (new) en los bloques libres del medio."
+        }
+    ];
+
+    let preguntasSesion = [];
+    let indiceActual = 0;
+    let puntaje = 0;
+
+    // Función para mezclar el banco y seleccionar 10 preguntas al azar
+    function iniciarPreguntas() {
+        let copiaBanco = [...bancoPreguntas];
+        // Algoritmo de mezcla rápido
+        for (let i = copiaBanco.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copiaBanco[i], copiaBanco[j]] = [copiaBanco[j], copiaBanco[i]];
+        }
+        preguntasSesion = copiaBanco.slice(0, 10);
+    }
+
+    function startQuiz() {
+        document.getElementById('welcome-screen').classList.remove('active');
+        document.getElementById('quiz-screen').classList.add('active');
+        iniciarPreguntas();
+        indiceActual = 0;
+        puntaje = 0;
+        showQuestion();
+    }
+
+    function showQuestion() {
+        // Resetear interfaz de la pregunta
+        document.getElementById('cmd-input').value = "";
+        document.getElementById('cmd-input').disabled = false;
+        document.getElementById('feedback').style.display = "none";
+        document.getElementById('submit-btn').style.display = "inline-block";
+        document.getElementById('next-btn').style.display = "none";
+        
+        document.getElementById('progress').innerText = `Desafío ${indiceActual + 1} de 10`;
+        document.getElementById('situation-text').innerText = preguntasSesion[indiceActual].problema;
+        
+        // Enfocar el input automáticamente
+        setTimeout(() => {
+            document.getElementById('cmd-input').focus();
+        }, 50);
+    }
+
+    function checkAnswer() {
+        const inputElement = document.getElementById('cmd-input');
+        const respuestaEstudiante = inputElement.value.trim(); // Limpieza de espacios extras
+        const respuestaCorrecta = preguntasSesion[indiceActual].correcto;
+        const feedbackBox = document.getElementById('feedback');
+
+        inputElement.disabled = true;
+        document.getElementById('submit-btn').style.display = "none";
+        document.getElementById('next-btn').style.display = "inline-block";
+
+        feedbackBox.style.display = "block";
+
+        if (respuestaEstudiante === respuestaCorrecta) {
+            feedbackBox.className = "feedback-box feedback-success";
+            feedbackBox.innerHTML = `<strong>✓ ¡COMANDO EJECUTADO CON ÉXITO!</strong><br>Respuesta correcta. +1 punto para tu evaluación.<br><br><strong>EXPLICACIÓN:</strong> ${preguntasSesion[indiceActual].explicacion}`;
+            puntaje++;
+        } else {
+            feedbackBox.className = "feedback-box feedback-error";
+            feedbackBox.innerHTML = `<strong>✗ ERROR DE SINTAXIS O CONCEPTO</strong><br>El comando ingresado no resuelve la situación planteada.<br><strong>Comando correcto esperado:</strong> <code style="color:#fff; background:#222; padding:2px 5px; border-radius:3px;">${respuestaCorrecta}</code><br><br><strong>ANÁLISIS DEL ERROR:</strong> ${preguntasSesion[indiceActual].explicacion}`;
+        }
+    }
+
+    function nextQuestion() {
+        indiceActual++;
+        if (indiceActual < 10) {
+            showQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    // Cálculo automatizado de nota bajo la escala chilena con 60% de exigencia
+    function calcularNota(buenas) {
+        const totalPreguntas = 10;
+        const corte = totalPreguntas * 0.6; // 6 preguntas para el 4.0
+        let nota = 1.0;
+
+        if (buenas < corte) {
+            // Escala de nota 1.0 a 4.0
+            nota = 1.0 + (buenas / corte) * 3.0;
+        } else {
+            // Escala de nota 4.0 a 7.0
+            nota = 4.0 + ((buenas - corte) / (totalPreguntas - corte)) * 3.0;
+        }
+        return nota.toFixed(1);
+    }
+
+    function showResults() {
+        document.getElementById('quiz-screen').classList.remove('active');
+        document.getElementById('result-screen').classList.add('active');
+
+        const porcentaje = (puntaje / 10) * 100;
+        const notaFinal = calcularNota(puntaje);
+
+        document.getElementById('res-correctas').innerText = `${puntaje} / 10`;
+        document.getElementById('res-porcentaje').innerText = `${porcentaje}%`;
+        
+        const notaElement = document.getElementById('res-nota');
+        notaElement.innerText = notaFinal;
+
+        const condicionElement = document.getElementById('res-condicion');
+        if (parseFloat(notaFinal) >= 4.0) {
+            notaElement.className = "nota-alta";
+            condicionElement.innerText = "APROBADO";
+            condicionElement.style.color = "#4af626";
+        } else {
+            notaElement.className = "nota-baja";
+            condicionElement.innerText = "REPROBADO (Requiere Reforzamiento)";
+            condicionElement.style.color = "#ff5f56";
+        }
+    }
+
+    function restartQuiz() {
+        document.getElementById('result-screen').classList.remove('active');
+        startQuiz();
+    }
+
+    // Permitir enviar la respuesta presionando la tecla Enter
+    document.getElementById('cmd-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            if (document.getElementById('submit-btn').style.display !== 'none') {
+                checkAnswer();
+            } else if (document.getElementById('next-btn').style.display !== 'none') {
+                nextQuestion();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
