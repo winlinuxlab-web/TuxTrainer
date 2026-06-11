@@ -434,11 +434,11 @@
 
         if (respuestaEstudiante === respuestaCorrecta) {
             feedbackBox.className = "feedback-box feedback-success";
-            feedbackBox.innerHTML = `<strong>✓ ¡COMANDO EJECUTADO CON ÉXITO!</strong><br>Respuesta correcta. +1 punto para tu evaluación.<br><br><strong>EXPLICACIÓN:</strong> ${preguntasSesion[indiceActual].explicacion}`;
+            feedbackBox.innerHTML = `<strong> ¡COMANDO EJECUTADO CON ÉXITO!</strong><br>Respuesta correcta. +1 punto para tu evaluación.<br><br><strong>EXPLICACIÓN:</strong> ${preguntasSesion[indiceActual].explicacion}`;
             puntaje++;
         } else {
             feedbackBox.className = "feedback-box feedback-error";
-            feedbackBox.innerHTML = `<strong>✗ ERROR DE SINTAXIS O CONCEPTO</strong><br>El comando ingresado no resuelve la situación planteada.<br><strong>Comando correcto esperado:</strong> <code style="color:#fff; background:#222; padding:2px 5px; border-radius:3px;">${respuestaCorrecta}</code><br><br><strong>ANÁLISIS DEL ERROR:</strong> ${preguntasSesion[indiceActual].explicacion}`;
+            feedbackBox.innerHTML = `<strong> ERROR DE SINTAXIS O CONCEPTO</strong><br>El comando ingresado no resuelve la situación planteada.<br><strong>Comando correcto esperado:</strong> <code style="color:#fff; background:#222; padding:2px 5px; border-radius:3px;">${respuestaCorrecta}</code><br><br><strong>ANÁLISIS DEL ERROR:</strong> ${preguntasSesion[indiceActual].explicacion}`;
         }
     }
 
@@ -484,7 +484,7 @@
             condicionElement.style.color = "#4af626";
         } else {
             notaElement.className = "nota-baja";
-            condicionElement.innerText = "REPROBADO (Requiere Reforzamiento)";
+            condicionElement.innerText = "Esta vez no pasaste el desafío, te sugiero revisar los apuntes y reforzar conceptos";
             condicionElement.style.color = "#ff5f56";
         }
     }
